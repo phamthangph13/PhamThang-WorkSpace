@@ -12,6 +12,14 @@ Dự án này chứa tài liệu, mã nguồn và các bài tập liên quan đ�
 - **Số lần làm:** 03  
 - **Ngày thực hiện:** 5/1/2026  
 
+### Kết quả
+
+| Quá trình làm bài | Kết quả cuối cùng |
+|:-----------------:|:-----------------:|
+| ![Can't Unsee Progress](assets/images/cantunsee-progress.png) | ![Can't Unsee Result](assets/images/cantunsee-result.jpeg) |
+
+> **Kết quả:** Đạt hạng **PLATINUM** với điểm số **7830** 🏆
+
 ---
 
 ## Bài 2: Quy trình kiểm thử
@@ -105,6 +113,12 @@ Kết quả lưu tại: `unit-test/target/surefire-reports/`
 - **XML:** TEST-StudentAnalyzerTest.xml
 - **Text:** StudentAnalyzerTest.txt
 
+### Mã nguồn
+
+- **Source code:** [StudentAnalyzer.js](unit-test/src/StudentAnalyzer.js)
+- **Test file:** [StudentAnalyzer.test.js](unit-test/test/StudentAnalyzer.test.js)
+- **Jest config:** [jest.config.js](unit-test/jest.config.js)
+
 ### Chi tiết các ca kiểm thử
 
 | Tên kiểm thử                             | Mô tả                                  |
@@ -137,6 +151,25 @@ cd cypress-exercise
 npm init -y
 npm install cypress --save-dev
 ```
+
+### Video Demo các bài kiểm thử
+
+Dưới đây là các video demo kết quả chạy Cypress E2E tests:
+
+| Test Suite | Video Demo | Mô tả |
+|------------|------------|-------|
+| Login Tests | [🎬 login_spec.cy.js.mp4](assets/videos/login_spec.cy.js.mp4) | Kiểm thử đăng nhập thành công và thất bại |
+| Cart Tests | [🎬 cart_spec.cy.js.mp4](assets/videos/cart_spec.cy.js.mp4) | Kiểm thử thêm/xóa sản phẩm giỏ hàng |
+| Checkout Tests | [🎬 checkout_spec.cy.js.mp4](assets/videos/checkout_spec.cy.js.mp4) | Kiểm thử quy trình thanh toán |
+
+> 📁 **Lưu ý:** Các video được tự động ghi lại bởi Cypress trong quá trình chạy test.
+
+### Mã nguồn Cypress Tests
+
+- **Login tests:** [login_spec.cy.js](Cypress/cypress/e2e/login_spec.cy.js)
+- **Cart tests:** [cart_spec.cy.js](Cypress/cypress/e2e/cart_spec.cy.js)  
+- **Checkout tests:** [checkout_spec.cy.js](Cypress/cypress/e2e/checkout_spec.cy.js)
+- **Cypress config:** [cypress.config.js](Cypress/cypress.config.js)
 
 ---
 
