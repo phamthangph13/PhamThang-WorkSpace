@@ -1,0 +1,20 @@
+{
+  "name": "student-analyzer",
+  "version": "1.0.0",
+  "description": "Phân tích dữ liệu điểm số học sinh - Bài tập thực hành kiểm thử với Jest",
+  "main": "src/StudentAnalyzer.js",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "unit-test",
+    "jest",
+    "student-analyzer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
