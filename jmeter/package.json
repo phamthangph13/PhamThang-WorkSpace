@@ -1,0 +1,24 @@
+{
+  "name": "jmeter-js-performance-testing",
+  "version": "1.0.0",
+  "description": "Performance testing using JavaScript with autocannon (JMeter alternative)",
+  "main": "run-all-tests.js",
+  "scripts": {
+    "test:basic": "node scenario1-basic.js",
+    "test:heavy": "node scenario2-heavy-load.js",
+    "test:custom": "node scenario3-custom.js",
+    "test:all": "node run-all-tests.js"
+  },
+  "keywords": [
+    "performance-testing",
+    "load-testing",
+    "jmeter",
+    "autocannon"
+  ],
+  "author": "Student",
+  "license": "MIT",
+  "dependencies": {
+    "autocannon": "^7.15.0",
+    "chalk": "^4.1.2"
+  }
+}

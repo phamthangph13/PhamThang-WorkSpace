@@ -1,0 +1,16 @@
+Metric,Value
+Total Requests,1218
+Duration (s),60.11
+Mean Latency (ms),976.47
+Min Latency (ms),59
+Max Latency (ms),9199
+P50 Latency (ms),550
+P75 Latency (ms),1214
+P90 Latency (ms),2308
+P99 Latency (ms),4717
+Throughput (bytes/sec),991314.14
+Requests/sec,20.30
+Errors,0
+Timeouts,0
+Error Rate (%),0.00
+Request Types,POST + GET (mixed)
