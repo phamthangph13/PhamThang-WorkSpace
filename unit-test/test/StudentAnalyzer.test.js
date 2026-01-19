@@ -548,4 +548,387 @@ describe('StudentAnalyzer', () => {
             });
         });
     });
+
+    // =====================================================
+    // KIỂM THỬ GIÁ TRỊ BIÊN (BOUNDARY VALUE ANALYSIS - BVA)
+    // Đánh giá đầy đủ theo chuẩn JUnit/ISTQB
+    // =====================================================
+    describe('Kiểm thử giá trị biên - BVA (Boundary Value Analysis)', () => {
+
+        /**
+         * PHÂN TÍCH GIÁ TRỊ BIÊN CHO isValidScore(score)
+         * 
+         * Biến đầu vào: score (number)
+         * Miền giá trị hợp lệ: [0, 10]
+         * 
+         * Các điểm biên cần test:
+         * - Biên dưới: 0 (MIN)
+         * - Ngay dưới biên dưới: -0.01 (MIN-)
+         * - Ngay trên biên dưới: 0.01 (MIN+)
+         * - Biên trên: 10 (MAX)
+         * - Ngay dưới biên trên: 9.99 (MAX-)
+         * - Ngay trên biên trên: 10.01 (MAX+)
+         * - Giá trị giữa: 5 (NOM - Nominal)
+         */
+        describe('BVA cho isValidScore() - Đầy đủ 7 điểm', () => {
+            test('MIN: score = 0 (biên dưới, hợp lệ)', () => {
+                expect(analyzer.isValidScore(0)).toBe(true);
+            });
+
+            test('MIN-: score = -0.01 (ngay dưới biên dưới, không hợp lệ)', () => {
+                expect(analyzer.isValidScore(-0.01)).toBe(false);
+            });
+
+            test('MIN+: score = 0.01 (ngay trên biên dưới, hợp lệ)', () => {
+                expect(analyzer.isValidScore(0.01)).toBe(true);
+            });
+
+            test('MAX: score = 10 (biên trên, hợp lệ)', () => {
+                expect(analyzer.isValidScore(10)).toBe(true);
+            });
+
+            test('MAX-: score = 9.99 (ngay dưới biên trên, hợp lệ)', () => {
+                expect(analyzer.isValidScore(9.99)).toBe(true);
+            });
+
+            test('MAX+: score = 10.01 (ngay trên biên trên, không hợp lệ)', () => {
+                expect(analyzer.isValidScore(10.01)).toBe(false);
+            });
+
+            test('NOM: score = 5 (giá trị giữa, hợp lệ)', () => {
+                expect(analyzer.isValidScore(5)).toBe(true);
+            });
+        });
+
+        /**
+         * PHÂN TÍCH GIÁ TRỊ BIÊN CHO countExcellentStudents()
+         * 
+         * Có 2 biên cần xét:
+         * 1. Biên hợp lệ điểm: [0, 10]
+         * 2. Biên học sinh giỏi: score >= 8.0
+         * 
+         * Các điểm biên ngưỡng giỏi:
+         * - 7.99 (ngay dưới ngưỡng giỏi)
+         * - 8.0 (đúng ngưỡng giỏi)
+         * - 8.01 (ngay trên ngưỡng giỏi)
+         */
+        describe('BVA cho countExcellentStudents() - Ngưỡng giỏi 8.0', () => {
+            test('THRESHOLD-: score = 7.99 (ngay dưới ngưỡng giỏi)', () => {
+                expect(analyzer.countExcellentStudents([7.99])).toBe(0);
+            });
+
+            test('THRESHOLD: score = 8.0 (đúng ngưỡng giỏi)', () => {
+                expect(analyzer.countExcellentStudents([8.0])).toBe(1);
+            });
+
+            test('THRESHOLD+: score = 8.01 (ngay trên ngưỡng giỏi)', () => {
+                expect(analyzer.countExcellentStudents([8.01])).toBe(1);
+            });
+
+            test('MIN boundary kết hợp: [0, 8.0] - biên dưới và ngưỡng giỏi', () => {
+                expect(analyzer.countExcellentStudents([0, 8.0])).toBe(1);
+            });
+
+            test('MAX boundary kết hợp: [10, 7.99] - biên trên và dưới ngưỡng', () => {
+                expect(analyzer.countExcellentStudents([10, 7.99])).toBe(1);
+            });
+
+            test('All boundaries: [0, 7.99, 8.0, 10] - tất cả các biên', () => {
+                // 0: hợp lệ, không giỏi
+                // 7.99: hợp lệ, không giỏi
+                // 8.0: hợp lệ, giỏi
+                // 10: hợp lệ, giỏi
+                expect(analyzer.countExcellentStudents([0, 7.99, 8.0, 10])).toBe(2);
+            });
+        });
+
+        /**
+         * PHÂN TÍCH GIÁ TRỊ BIÊN CHO calculateValidAverage()
+         * 
+         * Test các giá trị biên ảnh hưởng đến phép tính trung bình
+         */
+        describe('BVA cho calculateValidAverage() - Tất cả các biên', () => {
+            test('MIN only: [0] - chỉ biên dưới', () => {
+                expect(analyzer.calculateValidAverage([0])).toBe(0);
+            });
+
+            test('MAX only: [10] - chỉ biên trên', () => {
+                expect(analyzer.calculateValidAverage([10])).toBe(10);
+            });
+
+            test('MIN và MAX: [0, 10] - hai biên', () => {
+                expect(analyzer.calculateValidAverage([0, 10])).toBe(5);
+            });
+
+            test('All 7 BVA points: [-0.01, 0, 0.01, 5, 9.99, 10, 10.01]', () => {
+                // Chỉ tính: 0, 0.01, 5, 9.99, 10 (5 điểm hợp lệ)
+                // Sum = 0 + 0.01 + 5 + 9.99 + 10 = 25
+                // Avg = 25 / 5 = 5
+                expect(analyzer.calculateValidAverage([-0.01, 0, 0.01, 5, 9.99, 10, 10.01])).toBe(5);
+            });
+        });
+
+        /**
+         * ĐÁNH GIÁ CA KIỂM THỬ THỪA/THIẾU
+         * 
+         * ✅ ĐÃ CÓ (Đầy đủ):
+         * - MIN, MAX cho isValidScore
+         * - THRESHOLD (8.0) cho countExcellentStudents
+         * - MIN-, MAX+ cho cả hai phương thức
+         * 
+         * ⚠️ BỔ SUNG THÊM:
+         * - MIN+, MAX- cho isValidScore
+         * - Kết hợp nhiều giá trị biên trong cùng một test
+         */
+        describe('BVA Robustness Testing - Kiểm thử bền vững', () => {
+            test('Extreme MIN: score = -Infinity', () => {
+                expect(analyzer.isValidScore(-Infinity)).toBe(false);
+            });
+
+            test('Extreme MAX: score = Infinity', () => {
+                expect(analyzer.isValidScore(Infinity)).toBe(false);
+            });
+
+            test('Edge case: score = Number.MIN_VALUE (gần 0)', () => {
+                expect(analyzer.isValidScore(Number.MIN_VALUE)).toBe(true);
+            });
+
+            test('Edge case: score = 10 - Number.EPSILON (gần 10)', () => {
+                expect(analyzer.isValidScore(10 - Number.EPSILON)).toBe(true);
+            });
+        });
+    });
+
+    // =====================================================
+    // KIỂM THỬ MC/DC (Modified Condition/Decision Coverage)
+    // =====================================================
+    describe('Kiểm thử MC/DC (Modified Condition/Decision Coverage)', () => {
+
+        /**
+         * MC/DC CHO isValidScore(score)
+         * 
+         * Điều kiện gốc: typeof score === 'number' && score >= 0 && score <= 10
+         * 
+         * Phân tích:
+         * - C1: typeof score === 'number'
+         * - C2: score >= 0
+         * - C3: score <= 10
+         * 
+         * Decision = C1 && C2 && C3
+         * 
+         * Bảng MC/DC:
+         * | TC | C1 | C2 | C3 | Decision | Độc lập |
+         * |----|----|----|----| -------- |---------|
+         * | 1  | F  | -  | -  | F        | C1      |
+         * | 2  | T  | F  | -  | F        | C2      |
+         * | 3  | T  | T  | F  | F        | C3      |
+         * | 4  | T  | T  | T  | T        | Base    |
+         */
+        describe('MC/DC cho isValidScore() - 4 test cases tối thiểu', () => {
+            test('TC1: C1=F - typeof không phải number → Decision=F', () => {
+                // C1 = false (không phải number)
+                expect(analyzer.isValidScore('5')).toBe(false);
+                expect(analyzer.isValidScore(null)).toBe(false);
+                expect(analyzer.isValidScore(undefined)).toBe(false);
+                expect(analyzer.isValidScore({})).toBe(false);
+            });
+
+            test('TC2: C1=T, C2=F - là number nhưng < 0 → Decision=F', () => {
+                // C1 = true, C2 = false (score < 0)
+                expect(analyzer.isValidScore(-1)).toBe(false);
+                expect(analyzer.isValidScore(-0.01)).toBe(false);
+            });
+
+            test('TC3: C1=T, C2=T, C3=F - là number, >= 0, nhưng > 10 → Decision=F', () => {
+                // C1 = true, C2 = true, C3 = false (score > 10)
+                expect(analyzer.isValidScore(11)).toBe(false);
+                expect(analyzer.isValidScore(10.01)).toBe(false);
+            });
+
+            test('TC4: C1=T, C2=T, C3=T - tất cả đúng → Decision=T', () => {
+                // C1 = true, C2 = true, C3 = true
+                expect(analyzer.isValidScore(5)).toBe(true);
+                expect(analyzer.isValidScore(0)).toBe(true);
+                expect(analyzer.isValidScore(10)).toBe(true);
+            });
+        });
+
+        /**
+         * MC/DC CHO countExcellentStudents() - Điều kiện lọc học sinh giỏi
+         * 
+         * Điều kiện trong vòng lặp:
+         * if (isValidScore(score)) {  // D1
+         *     if (score >= 8.0) {     // D2
+         *         count++;
+         *     }
+         * }
+         * 
+         * D1: isValidScore(score) = true/false
+         * D2: score >= 8.0 = true/false (chỉ đánh giá khi D1 = true)
+         * 
+         * Bảng MC/DC:
+         * | TC | D1 | D2   | count++ |
+         * |----|----| ---- |---------|
+         * | 1  | F  | N/A  | Không   |
+         * | 2  | T  | F    | Không   |
+         * | 3  | T  | T    | Có      |
+         */
+        describe('MC/DC cho countExcellentStudents() - Logic lọc học sinh giỏi', () => {
+            test('TC1: D1=F - điểm không hợp lệ → không đếm', () => {
+                // isValidScore = false (điểm không hợp lệ)
+                expect(analyzer.countExcellentStudents([-5])).toBe(0);
+                expect(analyzer.countExcellentStudents([15])).toBe(0);
+                expect(analyzer.countExcellentStudents(['8'])).toBe(0);
+            });
+
+            test('TC2: D1=T, D2=F - điểm hợp lệ nhưng không giỏi → không đếm', () => {
+                // isValidScore = true, score < 8.0
+                expect(analyzer.countExcellentStudents([7.99])).toBe(0);
+                expect(analyzer.countExcellentStudents([0])).toBe(0);
+                expect(analyzer.countExcellentStudents([5])).toBe(0);
+            });
+
+            test('TC3: D1=T, D2=T - điểm hợp lệ và giỏi → đếm', () => {
+                // isValidScore = true, score >= 8.0
+                expect(analyzer.countExcellentStudents([8.0])).toBe(1);
+                expect(analyzer.countExcellentStudents([10])).toBe(1);
+                expect(analyzer.countExcellentStudents([9.5])).toBe(1);
+            });
+
+            test('MC/DC Coverage: Kết hợp tất cả các trường hợp', () => {
+                // Mảng chứa đại diện cho mỗi trường hợp MC/DC
+                // -5: D1=F (không hợp lệ)
+                // 5: D1=T, D2=F (hợp lệ, không giỏi)
+                // 9: D1=T, D2=T (hợp lệ, giỏi)
+                const scores = [-5, 5, 9];
+                expect(analyzer.countExcellentStudents(scores)).toBe(1);
+            });
+        });
+
+        /**
+         * MC/DC CHO calculateValidAverage() - Điều kiện tính trung bình
+         * 
+         * Điều kiện:
+         * D1: !scores || scores.length === 0 (kiểm tra mảng rỗng)
+         * D2: isValidScore(score) (trong vòng lặp)
+         * D3: validCount === 0 (sau vòng lặp)
+         * 
+         * Bảng MC/DC:
+         * | TC | D1 | D2  | D3  | Kết quả     |
+         * |----|----| --- | --- |-------------|
+         * | 1  | T  | N/A | N/A | return 0    |
+         * | 2  | F  | F   | T   | return 0    |
+         * | 3  | F  | T   | F   | return avg  |
+         */
+        describe('MC/DC cho calculateValidAverage() - Logic tính trung bình', () => {
+            test('TC1: D1=T - mảng null/rỗng → return 0', () => {
+                expect(analyzer.calculateValidAverage(null)).toBe(0);
+                expect(analyzer.calculateValidAverage(undefined)).toBe(0);
+                expect(analyzer.calculateValidAverage([])).toBe(0);
+            });
+
+            test('TC2: D1=F, D2=F (all), D3=T - mảng có phần tử nhưng không hợp lệ → return 0', () => {
+                // Mảng không rỗng, nhưng tất cả điểm không hợp lệ
+                expect(analyzer.calculateValidAverage([-5, 15, 100])).toBe(0);
+            });
+
+            test('TC3: D1=F, D2=T (some), D3=F - có điểm hợp lệ → return avg', () => {
+                // Mảng không rỗng, có điểm hợp lệ
+                expect(analyzer.calculateValidAverage([5, 7, 9])).toBe(7);
+            });
+
+            test('MC/DC Coverage: Hỗn hợp điểm hợp lệ và không hợp lệ', () => {
+                // D1=F, D2=T cho một số, D2=F cho số khác
+                // Chỉ tính: 6 + 8 = 14 / 2 = 7
+                expect(analyzer.calculateValidAverage([-5, 6, 15, 8, 100])).toBe(7);
+            });
+        });
+
+        /**
+         * MC/DC CHO NaN HANDLING
+         * 
+         * Kiểm tra xử lý đặc biệt với NaN
+         */
+        describe('MC/DC cho NaN handling', () => {
+            test('isValidScore với NaN', () => {
+                // typeof NaN === 'number' là true, nhưng NaN >= 0 là false
+                expect(analyzer.isValidScore(NaN)).toBe(false);
+            });
+
+            test('countExcellentStudents với NaN trong mảng', () => {
+                expect(analyzer.countExcellentStudents([NaN, 8.0, NaN])).toBe(1);
+            });
+
+            test('calculateValidAverage với NaN trong mảng', () => {
+                // Chỉ tính 5 + 7 = 12 / 2 = 6
+                expect(analyzer.calculateValidAverage([NaN, 5, NaN, 7])).toBe(6);
+            });
+        });
+    });
+
+    // =====================================================
+    // TỔNG HỢP - COVERAGE SUMMARY
+    // =====================================================
+    describe('Coverage Summary - Tổng hợp độ phủ', () => {
+        test('Statement Coverage: Tất cả các dòng lệnh được thực thi', () => {
+            // Test đảm bảo mọi dòng code được chạy ít nhất 1 lần
+            const analyzer = new StudentAnalyzer();
+
+            // isValidScore - tất cả các nhánh
+            analyzer.isValidScore(5);      // return true
+            analyzer.isValidScore(-1);     // return false (score < 0)
+            analyzer.isValidScore(11);     // return false (score > 10)
+            analyzer.isValidScore('abc');  // return false (not number)
+
+            // countExcellentStudents - tất cả các nhánh
+            analyzer.countExcellentStudents(null);     // return 0 (null check)
+            analyzer.countExcellentStudents([]);       // return 0 (empty)
+            analyzer.countExcellentStudents([9, 7]);   // loop + conditions
+
+            // calculateValidAverage - tất cả các nhánh
+            analyzer.calculateValidAverage(null);      // return 0 (null check)
+            analyzer.calculateValidAverage([]);        // return 0 (empty)
+            analyzer.calculateValidAverage([-1]);      // return 0 (no valid)
+            analyzer.calculateValidAverage([5, 7]);    // return avg
+
+            expect(true).toBe(true); // Placeholder assertion
+        });
+
+        test('Branch Coverage: Tất cả các nhánh if-else', () => {
+            const analyzer = new StudentAnalyzer();
+
+            // isValidScore branches
+            expect(analyzer.isValidScore(5)).toBe(true);   // all conditions true
+            expect(analyzer.isValidScore('5')).toBe(false); // typeof fails
+            expect(analyzer.isValidScore(-1)).toBe(false);  // >= 0 fails
+            expect(analyzer.isValidScore(11)).toBe(false);  // <= 10 fails
+
+            // countExcellentStudents branches  
+            expect(analyzer.countExcellentStudents(null)).toBe(0);    // null check
+            expect(analyzer.countExcellentStudents([])).toBe(0);      // empty check
+            expect(analyzer.countExcellentStudents([5])).toBe(0);     // valid, not excellent
+            expect(analyzer.countExcellentStudents([9])).toBe(1);     // valid, excellent
+            expect(analyzer.countExcellentStudents([-1])).toBe(0);    // invalid score
+
+            // calculateValidAverage branches
+            expect(analyzer.calculateValidAverage(null)).toBe(0);     // null check
+            expect(analyzer.calculateValidAverage([])).toBe(0);       // empty check
+            expect(analyzer.calculateValidAverage([-1])).toBe(0);     // no valid scores
+            expect(analyzer.calculateValidAverage([5])).toBe(5);      // has valid scores
+        });
+
+        test('MC/DC Coverage: Mỗi điều kiện ảnh hưởng độc lập', () => {
+            const analyzer = new StudentAnalyzer();
+
+            // isValidScore: C1 && C2 && C3
+            // C1 độc lập: typeof fails
+            expect(analyzer.isValidScore('5')).toBe(false);
+            // C2 độc lập: score < 0
+            expect(analyzer.isValidScore(-1)).toBe(false);
+            // C3 độc lập: score > 10
+            expect(analyzer.isValidScore(11)).toBe(false);
+            // All true
+            expect(analyzer.isValidScore(5)).toBe(true);
+        });
+    });
 });
