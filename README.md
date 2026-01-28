@@ -358,6 +358,30 @@ Kết quả được lưu tại thư mục `jmeter/results/`:
 
 ---
 
+## Bài 5: Kiểm thử thủ công (Manual Testing)
+
+### Giới thiệu
+Dự án xây dựng bộ tài liệu kiểm thử thủ công cho hệ thống Web E-commerce giả lập.
+
+### Cấu trúc thư mục
+Dự án được tổ chức theo cấu trúc chuẩn:
+- `manual-testing/Test Plan`: Kế hoạch kiểm thử
+- `manual-testing/Test Cases`: Các ca kiểm thử
+- `manual-testing/RTM`: Ma trận truy vết yêu cầu
+- `manual-testing/Bug Reports`: Báo cáo lỗi
+- `manual-testing/Test Report`: Báo cáo tổng kết
+- `manual-testing/Test Metrics`: Chỉ số đo lường
+
+### Tài liệu chi tiết
+1. **[Kế hoạch kiểm thử (Test Plan)](manual-testing/Test%20Plan/Test%20Plan.md)**
+2. **[Danh sách Ca kiểm thử (Test Cases)](manual-testing/Test%20Cases/Test%20Cases.md)** (47 test cases)
+3. **[Ma trận truy vết (RTM)](manual-testing/RTM/RTM.md)** (Coverage 100%)
+4. **[Báo cáo lỗi (Bug Reports)](manual-testing/Bug%20Reports/Bug%20Reports.md)** (10 bugs)
+5. **[Báo cáo kiểm thử (Test Report)](manual-testing/Test%20Report/Test%20Report.md)**
+6. **[Chỉ số kiểm thử (Test Metrics)](manual-testing/Test%20Metrics/Test%20Metrics.md)**
+
+---
+
 ## Đóng góp
 
 - Liên hệ: [phamthangph13](https://github.com/phamthangph13)
